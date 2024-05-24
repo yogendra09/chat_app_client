@@ -16,12 +16,13 @@ export const asyncCurrentUser = () => async (dispatch, getstate) => {
     });
     if (!data) {
       dispatch(removeUser());
+      localStorage.removeItem("token");
       return;
     }
     console.log(data);
     dispatch(addUser(data));
   } catch (error) {
-    console.log(error);
+    alert(error);
     // console.log(error.response.data.message);
   }
 };
@@ -34,7 +35,7 @@ export const asyncUserRegister = (newUser) => async (dispatch, getstate) => {
     dispatch(addUser(data.user));
     dispatch(asyncCurrentUser());
   } catch (error) {
-    console.log(error);
+    alert(error);
     // console.log(error.response.data.message);
   }
 };
@@ -62,7 +63,7 @@ export const asyncUserLogout = () => async (dispatch, getstate) => {
     localStorage.removeItem("token");
     dispatch(removeUser());
   } catch (error) {
-    console.log(error);
+    alert(error);
     console.log(error.response.data.message);
   }
 };
