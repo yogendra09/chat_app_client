@@ -17,7 +17,7 @@ const ChatArea = ({ chatPartner, displayMsg, setdisplayMsg }) => {
       sender: user.username,
       receiver: chatPartner.username,
       message: newMessage,
-      date:Date.now()
+      date: Date.now(),
     };
     setdisplayMsg([...displayMsg, message]);
     socket.emit("sendPrivateMessage", message);
@@ -25,9 +25,10 @@ const ChatArea = ({ chatPartner, displayMsg, setdisplayMsg }) => {
   };
 
   socket.on("receive_private_message", function (data) {
-    console.log(data.sender, chatPartner.username);
-    data.sender === chatPartner.username &&
+    console.log(data.sender, chatPartner.username, data);
+    if (data.sender === chatPartner.username) {
       setdisplayMsg([...displayMsg, data]);
+    }
   });
   const keepScrollbarAtBottom = () => {
     if (containerRef.current) {
@@ -85,7 +86,7 @@ const ChatArea = ({ chatPartner, displayMsg, setdisplayMsg }) => {
           <div className="flex-grow ml-4">
             <div className="relative w-full">
               <input
-              value={newMessage}
+                value={newMessage}
                 onChange={(e) => setnewMessage(e.target.value)}
                 type="text"
                 className="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"

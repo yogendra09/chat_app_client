@@ -6,10 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 const PrivateRoute = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.userReducer);
-   console.log(isAuthenticated)
   useEffect(()=>{
     dispatch(asyncCurrentUser());
-    console.log(isAuthenticated)
   },[isAuthenticated])
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };

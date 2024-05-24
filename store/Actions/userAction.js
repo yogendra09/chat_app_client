@@ -19,7 +19,7 @@ export const asyncCurrentUser = () => async (dispatch, getstate) => {
       localStorage.removeItem("token");
       return;
     }
-    console.log(data);
+    // console.log(data);
     dispatch(addUser(data));
   } catch (error) {
     alert(error);
