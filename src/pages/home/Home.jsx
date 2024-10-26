@@ -1,14 +1,16 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { asyncCurrentUser } from "../../../store/Actions/userAction";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import Chat from "../chat/Chat";
-import { socket } from "../../../socket";
+import Nav from "../../components/nav/Nav";
 
 const Home = () => {
-  return <div className="h-screen w-full flex ">
-    <Chat/>
-  </div>;
+  return (
+    <div className="h-screen w-full flex flex-col overflow-hidden">
+      <Nav />
+      <div className="flex-1 overflow-hidden">
+        <Chat />
+      </div>
+    </div>
+  );
 };
 
 export default Home;
