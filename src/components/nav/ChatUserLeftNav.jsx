@@ -15,7 +15,7 @@ import { IoAddOutline } from "react-icons/io5";
 const ChatUserLeftNav = ({ setchatPartner, setdisplayMsg }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.userReducer);
-  const { activeUsers } = useSelector((state) => state.userReducer);
+  const { activeUsers, groups } = useSelector((state) => state.userReducer);
   const fetchMessages = (receiver) => {
     socket.emit("fetchMessages", { sender: user, receiver: receiver });
     socket.on("fetchPrivateMessages", (data) => {
@@ -35,20 +35,26 @@ const ChatUserLeftNav = ({ setchatPartner, setdisplayMsg }) => {
   const createGroup = () => {
     if (groupName.trim()) {
       if (!groupName) {
-        return
+        return;
       }
-      console.log(user.username,groupName);
+      console.log(user.username, groupName);
       socket.emit("create-new-group", {
         sender: user.username,
-        groupName
-      })
+        groupName,
+      });
       setGroupName("");
       setShowGroupInput(false);
 
-      socket.on('group-created', newGroup => {
-       dispatch(Addgroup(newGroup))
-       Addgroup({newGroup.profileImage, newGroup.name})
-      })
+      socket.on("group-created", (newGroup) => {
+        console.log(newGroup);
+        
+        dispatch(
+          Addgroup({
+            image: { url: newGroup.profileImage },
+            name: newGroup.name,
+          })
+        );
+      });
     }
   };
 
@@ -62,73 +68,80 @@ const ChatUserLeftNav = ({ setchatPartner, setdisplayMsg }) => {
   };
 
   return (
-    <>
-      <div className="relative tex">
-        <div className="flex flex-col py-4 pl-4 pr-2 w-[42vh] bg-white flex-shrink-0">
-         
-          <div className="h-10 mt-2 bg-red-200">
+    <div className="bg-gray-100 h-screen">
+      <div className="flex flex-col py-6 px-4 w-80 bg-white shadow-lg h-full">
+        <div className="mb-6">
+          <div className="relative">
             <input
-              className="h-full w-full outline-none border-[1px] border-[#000] p-2 rounded-md"
+              className="w-full py-2 pl-10 pr-4 text-gray-700 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
               type="text"
-              placeholder="Serach user..."
+              placeholder="Search users..."
             />
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+              <IoSearchOutline className="text-gray-500" />
+            </div>
           </div>
-          <div className="flex flex-col mt-6">
-            <div className="flex flex-row items-center justify-between text-xs">
-              <span className="font-bold">Active Conversations</span>
-              <span className="flex items-center justify-center bg-gray-300 h-4 w-4 rounded-full">
+        </div>
+
+        <div className="flex flex-col space-y-6">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-800">Active Conversations</h2>
+              <span className="px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
                 {activeUsers && activeUsers.length}
               </span>
             </div>
-            <div className="flex flex-col space-y-1 mt-4 -mx-2 h-48 overflow-y-auto">
+            <div className="space-y-2 max-h-48 overflow-y-auto">
               {activeUsers &&
-                activeUsers.map((user) => {
-                  return (
-                    <div
-                      key={user._id}
-                      onClick={() => {
-                        fetchMessages(user);
-                        setchatPartner(user);
-                      }}
-                    >
-                      <UserChatCard
-                        key={user._id}
-                        username={user.username}
-                        image={user.image.url}
-                      />
-                    </div>
-                  );
-                })}
+                activeUsers.map((user) => (
+                  <div
+                    key={user._id}
+                    onClick={() => {
+                      fetchMessages(user);
+                      setchatPartner(user);
+                    }}
+                    className="cursor-pointer hover:bg-gray-100 rounded-lg transition duration-150 ease-in-out"
+                  >
+                    <UserChatCard
+                      username={user.username}
+                      image={user.image.url}
+                    />
+                  </div>
+                ))}
             </div>
-            <div className="group flex flex-col items-center justify-between text-xs mt-6">
-              <div className="w-full flex justify-between items-center">
-                <span className="font-bold">Groups</span>
-                <div className="flex items-center">
-                  <span className="flex items-center justify-center bg-gray-300 h-4 w-4 rounded-full mr-2">
-                    7
-                  </span>
-                  <button
-                    onClick={() => {
-                      setShowGroupInput(!showGroupInput);
-                      setShowJoinInput(false);
-                    }}
-                    className="text-blue-500 hover:text-blue-600 focus:outline-none mr-2"
-                  >
-                    <IoAddOutline size={20} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowJoinInput(!showJoinInput);
-                      setShowGroupInput(false);
-                    }}
-                    className="text-green-500 hover:text-green-600 focus:outline-none"
-                  >
-                    <MdGroup size={20} />
-                  </button>
-                </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-800">Groups</h2>
+              <div className="flex items-center space-x-2">
+                <span className="px-2 py-1 text-xs font-semibold text-green-800 bg-green-200 rounded-full">
+                  {groups.length}
+                </span>
+                <button
+                  onClick={() => {
+                    setShowGroupInput(!showGroupInput);
+                    setShowJoinInput(false);
+                  }}
+                  className="text-blue-500 hover:text-blue-600 focus:outline-none"
+                >
+                  <IoAddOutline size={20} />
+                </button>
+                <button
+                  onClick={() => {
+                    setShowJoinInput(!showJoinInput);
+                    setShowGroupInput(false);
+                  }}
+                  className="text-green-500 hover:text-green-600 focus:outline-none"
+                >
+                  <MdGroup size={20} />
+                </button>
               </div>
-              {showGroupInput && (
-                <div className="w-full mt-2 flex">
+            </div>
+
+            {showGroupInput && (
+              <div className="mb-4">
+                <div className="flex">
                   <input
                     type="text"
                     placeholder="Enter group name"
@@ -138,14 +151,17 @@ const ChatUserLeftNav = ({ setchatPartner, setdisplayMsg }) => {
                   />
                   <button
                     onClick={createGroup}
-                    className="bg-blue-500 text-white px-2 rounded-r-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="bg-blue-500 text-white px-4 rounded-r-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
                   >
                     Create
                   </button>
                 </div>
-              )}
-              {showJoinInput && (
-                <div className="w-full mt-2 flex">
+              </div>
+            )}
+
+            {showJoinInput && (
+              <div className="mb-4">
+                <div className="flex">
                   <input
                     type="text"
                     placeholder="Enter group name to join"
@@ -155,21 +171,36 @@ const ChatUserLeftNav = ({ setchatPartner, setdisplayMsg }) => {
                   />
                   <button
                     onClick={joinGroup}
-                    className="bg-green-500 text-white px-4 rounded-r-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="bg-green-500 text-white px-4 rounded-r-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150 ease-in-out"
                   >
                     Join
                   </button>
                 </div>
-              )}
-            </div>
-            <div className="max-h-[34vh] bg-slate-500 overflow-y-auto flex flex-col space-y-1 mt-4 -mx-2">
-              <UserChatCard username={"amit"} />
-              <UserChatCard username={"amit"} />
+              </div>
+            )}
+
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {groups.length > 0 &&
+                groups.map((user) => (
+                  <div
+                    key={user._id}
+                    onClick={() => {
+                      fetchMessages(user);
+                      setchatPartner(user);
+                    }}
+                    className="cursor-pointer hover:bg-gray-100 rounded-lg transition duration-150 ease-in-out"
+                  >
+                    <UserChatCard
+                      username={user.username}
+                      image={user.image.url}
+                    />
+                  </div>
+                ))}
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

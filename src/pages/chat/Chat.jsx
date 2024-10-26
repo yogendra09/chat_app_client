@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import ChatUserLeftNav from "../../components/nav/ChatUserLeftNav";
 import SendingMessage from "../../components/message/SendingMessage";
 import { useDispatch, useSelector } from "react-redux";
 import {
   activeUsers,
+  Addgroup,
   removeUser,
+  setGroup,
   updateConnection,
 } from "../../../store/Reducers/userReducer";
 import { socket } from "../../../socket";
@@ -14,19 +16,32 @@ import ChatArea from "../../components/chat/ChatArea";
 
 const Chat = () => {
   const { user } = useSelector((state) => state.userReducer);
-  const { isAuthenticated } = useSelector((state) => state.userReducer);
+  const { isAuthenticated,groups } = useSelector((state) => state.userReducer);
   const [displayMsg, setdisplayMsg] = useState([]);
   const [chatPartner, setchatPartner] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const handleActiveUsers = useCallback((data) => {
+    console.log(data);
+    dispatch(activeUsers(data.activeUsers));
+    dispatch(setGroup(data.allGroups));
+  }, [dispatch]);
+
   useEffect(() => {
     dispatch(updateConnection(true));
-    socket.emit("server_joined", { user: user && user.username });
-    socket.on("activeUsers", (data) => {
-      dispatch(activeUsers(data));
+    socket.emit("server_joined", { user:user && user.username });
+
+    socket.on("activeUsers", handleActiveUsers);
+
+    socket.emit("group-joined", (group) => {
+      console.log(group);
     });
-  }, [activeUsers]);
+
+    return () => {
+      // socket.off("activeUsers", handleActiveUsers);
+    };
+  }, [dispatch, user.username, handleActiveUsers]);
 
   return (
     <>
@@ -49,4 +64,4 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+export default React.memo(Chat);

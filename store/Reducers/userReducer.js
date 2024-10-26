@@ -25,6 +25,9 @@ export const userReducer = createSlice({
     Addgroup:(state,action)=>{
       state.groups.push(action.payload);
    },
+   setGroup:(state,action)=>{
+    state.groups = action.payload;
+ },
     isError: (state, action) => {
       state.errors.push(action.payload);
     },
@@ -38,6 +41,6 @@ export const userReducer = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const {addUser,isError,removeError,removeUser,updateConnection,activeUsers,Addgroup} = userReducer.actions;
+export const {addUser,isError,removeError,removeUser,updateConnection,activeUsers,Addgroup,setGroup} = userReducer.actions;
 
 export default userReducer.reducer;
