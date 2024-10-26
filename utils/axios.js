@@ -1,11 +1,11 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:8080/",
+  baseURL: "https://chat-app-server-059e.onrender.com/",
   withCredentials: true,
   
 });
-
+// https://chat-app-server-059e.onrender.com/
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
