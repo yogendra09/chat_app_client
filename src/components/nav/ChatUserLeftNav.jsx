@@ -191,8 +191,8 @@ const ChatUserLeftNav = ({ setchatPartner, setdisplayMsg }) => {
                     className="cursor-pointer hover:bg-gray-100 rounded-lg transition duration-150 ease-in-out"
                   >
                     <UserChatCard
-                      username={user.username}
-                      image={user.image.url}
+                      username={user.name}
+                      image={user.image}
                     />
                   </div>
                 ))}

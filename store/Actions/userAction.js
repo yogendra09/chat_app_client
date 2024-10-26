@@ -35,7 +35,6 @@ export const asyncUserRegister = (newUser) => async (dispatch, getstate) => {
     dispatch(addUser(data.user));
     dispatch(asyncCurrentUser());
   } catch (error) {
-    alert(error);
     // console.log(error.response.data.message);
   }
 };
@@ -64,6 +63,6 @@ export const asyncUserLogout = () => async (dispatch, getstate) => {
     dispatch(removeUser());
   } catch (error) {
     alert(error);
-    console.log(error.response.data.message);
+    // console.log(error.response.data.message);
   }
 };
